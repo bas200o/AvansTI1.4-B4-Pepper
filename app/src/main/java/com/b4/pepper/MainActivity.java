@@ -15,6 +15,7 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
         QiSDK.register(this,this);
