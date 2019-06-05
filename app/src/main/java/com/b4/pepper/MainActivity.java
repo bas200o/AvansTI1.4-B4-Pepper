@@ -13,6 +13,7 @@ import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.b4.pepper.model.SpeechList;
@@ -60,6 +61,13 @@ public class MainActivity extends RobotActivity implements RobotLifecycleCallbac
             @Override
             public void onStarted() {
                 Log.i("Speech", "Discussion started.");
+            }
+        });
+
+        this.chat.addOnHeardListener(new Chat.OnHeardListener() {
+            @Override
+            public void onHeard(Phrase heardPhrase) {
+                heardPhrase.getText();
             }
         });
 
