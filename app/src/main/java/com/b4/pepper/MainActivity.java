@@ -16,8 +16,8 @@ import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
-import com.b4.pepper.model.SpeechList;
-import com.b4.pepper.model.SpeechModel;
+import com.b4.pepper.model.Speech.SpeechList;
+import com.b4.pepper.model.Speech.SpeechModel;
 
 public class MainActivity extends RobotActivity implements RobotLifecycleCallbacks {
 
