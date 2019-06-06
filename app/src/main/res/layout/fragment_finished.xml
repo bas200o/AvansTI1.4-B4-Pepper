@@ -15,7 +15,7 @@
             android:layout_width="800px"
             android:layout_height="wrap_content"
             android:layout_marginBottom="20dp"
-            android:text="U kunt gaan zitten aan tafel"
+            android:text="@string/finishText"
             android:textAlignment="center"
             android:textSize="36sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
@@ -23,11 +23,11 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tableNumber"
             android:layout_width="800px"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="10"
+            android:text="[Table number]"
             android:textAlignment="center"
             android:textSize="36sp"
             app:layout_constraintEnd_toEndOf="parent"

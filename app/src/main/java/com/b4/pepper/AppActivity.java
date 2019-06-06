@@ -142,13 +142,15 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
             }
             else if(numberOfPersons == 0)
             {
-                errorMessage.setText("Incorrecte invoer");
+                //errorMessage.setText("Incorrecte invoer");
+                errorMessage.setText(R.string.invalidInputMessageText);
                 errorMessage.setVisibility(View.VISIBLE);
             }
         }
         catch(Exception e)
         {
-            errorMessage.setText("Incorrecte invoer");
+            //errorMessage.setText("Incorrecte invoer");
+            errorMessage.setText(R.string.invalidInputMessageText);
             errorMessage.setVisibility(View.VISIBLE);
         }
     }
@@ -206,7 +208,8 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
         if(numberOfPersons > 40)
         {
-            errorMessage.setText("Te veel personen");
+            //errorMessage.setText("Te veel personen");
+            errorMessage.setText(R.string.toManyPersonsMessageText);
             errorMessage.setVisibility(View.VISIBLE);
         }
         else
