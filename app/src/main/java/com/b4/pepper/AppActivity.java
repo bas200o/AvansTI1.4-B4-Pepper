@@ -1,20 +1,10 @@
 package com.b4.pepper;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.view.DragEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -24,8 +14,8 @@ import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.ListenResult;
-import com.b4.pepper.model.ISpeechToTextReceiver;
-import com.b4.pepper.model.SpeechRecognizer;
+import com.b4.pepper.model.Speech.ISpeechToTextReceiver;
+import com.b4.pepper.model.Speech.SpeechRecognizer;
 import com.b4.pepper.ui.main.SectionsPagerAdapter;
 
 public class AppActivity extends RobotActivity implements RobotLifecycleCallbacks, ISpeechToTextReceiver

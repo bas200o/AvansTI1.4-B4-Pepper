@@ -27,6 +27,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation files('libs/org.eclipse.paho.android.service-1.1.1.jar')
+    implementation files('libs/org.eclipse.paho.client.mqttv3-1.1.1.jar')
     implementation 'com.aldebaran:qisdk:1.4.8'
     implementation 'com.aldebaran:qisdk-design:1.4.8'
     implementation 'com.android.support:design:28.0.0'
