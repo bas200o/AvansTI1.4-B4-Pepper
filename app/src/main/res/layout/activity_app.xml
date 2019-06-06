@@ -31,18 +31,21 @@
             app:tabMode="fixed"/>
     </android.support.design.widget.AppBarLayout>
 
-    <!--android.support.v4.view.ViewPager-->
+    android.support.v4.view.ViewPager
     <com.b4.pepper.NonSwipeableViewPager
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/fab"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="bottom|end"-->
-        <!--android:layout_margin="@dimen/fab_margin"-->
-        <!--app:srcCompat="@android:drawable/ic_dialog_email" />-->
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        android:onClick="onChangeLanguageClicked"
+        app:maxImageSize="35dp"
+        app:srcCompat="@android:drawable/ic_menu_mylocation" />
+    <!--app:srcCompat="@android:drawable/ic_dialog_email"-->
 </android.support.design.widget.CoordinatorLayout>

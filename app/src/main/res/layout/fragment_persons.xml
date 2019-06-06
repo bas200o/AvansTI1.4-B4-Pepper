@@ -15,7 +15,7 @@
             android:layout_width="800px"
             android:layout_height="wrap_content"
             android:layout_marginBottom="50dp"
-            android:text="Met hoeveel personen bent u"
+            android:text="@string/personAmmountText"
             android:textAlignment="center"
             android:textSize="36sp"
             app:layout_constraintBottom_toTopOf="@+id/guideline"
@@ -32,23 +32,12 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/button"
-            android:layout_width="193px"
-            android:layout_height="40px"
-            android:layout_marginTop="8dp"
-            android:background="@color/colorPrimary"
-            android:textColor="@android:color/background_light"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="@+id/personsCount"
-            app:layout_constraintTop_toBottomOf="@+id/button14" />
-
-        <Button
             android:id="@+id/button14"
             android:layout_width="193px"
             android:layout_height="40px"
             android:layout_marginTop="8dp"
             android:background="@color/colorPrimary"
-            android:onClick="onPersonsButtonClicked"
+            android:onClick="onPlusMinusClicked"
             android:text="+"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
@@ -101,7 +90,7 @@
             android:layout_marginStart="8dp"
             android:background="@color/colorPrimary"
             android:onClick="onTableReserve"
-            android:text="Reserveren"
+            android:text="@string/reserverText"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="@+id/personsCount"
@@ -114,14 +103,11 @@
             android:layout_height="40px"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
             android:background="@color/colorPrimary"
             android:onClick="onPersonsButtonClicked"
             android:text="5"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/button2"
             app:layout_constraintTop_toBottomOf="@+id/button6" />
 
@@ -131,12 +117,11 @@
             android:layout_height="40px"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
             android:background="@color/colorPrimary"
+            android:onClick="onBackspaceClicked"
+            android:text="BackSpace"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/button7"
             app:layout_constraintTop_toBottomOf="@+id/button15" />
 
@@ -146,14 +131,11 @@
             android:layout_height="40px"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
             android:background="@color/colorPrimary"
             android:onClick="onPersonsButtonClicked"
             android:text="0"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/button7"
             app:layout_constraintTop_toBottomOf="@+id/button12" />
 
@@ -163,14 +145,11 @@
             android:layout_height="40px"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
             android:background="@color/colorPrimary"
             android:onClick="onPersonsButtonClicked"
             android:text="8"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/button"
-            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/button2"
             app:layout_constraintTop_toBottomOf="@+id/button3" />
 
@@ -180,13 +159,11 @@
             android:layout_height="40px"
             android:layout_marginStart="8dp"
             android:layout_marginTop="40dp"
-            android:layout_marginEnd="8dp"
             android:background="@color/colorPrimary"
             android:onClick="onPersonsButtonClicked"
             android:text="2"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/button"
             app:layout_constraintStart_toEndOf="@+id/button2"
             app:layout_constraintTop_toTopOf="@+id/guideline" />
 
@@ -209,23 +186,12 @@
             android:layout_height="40px"
             android:layout_marginTop="8dp"
             android:background="@color/colorPrimary"
-            android:onClick="onPersonsButtonClicked"
+            android:onClick="onPlusMinusClicked"
             android:text="-"
             android:textColor="@android:color/background_light"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/personsCount"
             app:layout_constraintTop_toBottomOf="@+id/button10" />
-
-        <Button
-            android:id="@+id/button13"
-            android:layout_width="193px"
-            android:layout_height="40px"
-            android:layout_marginTop="8dp"
-            android:background="@color/colorPrimary"
-            android:textColor="@android:color/background_light"
-            android:textSize="18sp"
-            app:layout_constraintStart_toStartOf="@+id/personsCount"
-            app:layout_constraintTop_toBottomOf="@+id/button7" />
 
         <Button
             android:id="@+id/button10"
@@ -279,7 +245,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:clickable="false"
-            android:editable="false"
             android:ems="10"
             android:enabled="false"
             android:inputType="numberSigned"
