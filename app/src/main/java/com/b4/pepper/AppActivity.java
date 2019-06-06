@@ -119,19 +119,10 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
             if(numberOfPersons != 0 || text.length() > 0)
             {
-                personCountText.setText(newText);
+                personCountText.setText(Integer.toString(numberOfPersons));
             }
 
-            if(numberOfPersons > 40)
-            {
-                errorMessage.setText("Te veel personen");
-                errorMessage.setVisibility(View.VISIBLE);
-            }
-            else
-            {
-                errorMessage.setText("");
-                errorMessage.setVisibility(View.INVISIBLE);
-            }
+            checkPersonsAmount(numberOfPersons);
         } catch(Exception e) { }
     }
 
@@ -145,15 +136,83 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         {
             int numberOfPersons = Integer.parseInt(text);
 
-            if(numberOfPersons <= 40)
+            if(numberOfPersons > 0 && numberOfPersons <= 40)
             {
                 this.tabLayout.getTabAt(2).select();
+            }
+            else if(numberOfPersons == 0)
+            {
+                errorMessage.setText("Incorrecte invoer");
+                errorMessage.setVisibility(View.VISIBLE);
             }
         }
         catch(Exception e)
         {
             errorMessage.setText("Incorrecte invoer");
             errorMessage.setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void onPlusMinusClicked(View view)
+    {
+        EditText personCountText = findViewById(R.id.personsCount);
+        String text = personCountText.getText().toString();
+
+        String character = ((Button)view).getText().toString();
+
+        try
+        {
+            int numberOfPersons = (text.isEmpty()) ? 0 : Integer.parseInt(text);
+
+            if(character.equals("+"))
+            {
+                numberOfPersons++;
+            }
+            else if(character.equals("-"))
+            {
+                if(numberOfPersons > 0)
+                {
+                    numberOfPersons--;
+                }
+            }
+            personCountText.setText(Integer.toString(numberOfPersons));
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void onBackspaceClicked(View view)
+    {
+        EditText personCountText = findViewById(R.id.personsCount);
+        String text = personCountText.getText().toString();
+
+        if(!text.isEmpty())
+        {
+            String newText = text.substring(0, text.length() - 1);
+            personCountText.setText(newText);
+            try
+            {
+                checkPersonsAmount(Integer.parseInt(newText));
+            }
+            catch(Exception e){};
+        }
+    }
+
+    private void checkPersonsAmount(int numberOfPersons)
+    {
+        TextView errorMessage = findViewById(R.id.errorMessage);
+
+        if(numberOfPersons > 40)
+        {
+            errorMessage.setText("Te veel personen");
+            errorMessage.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            errorMessage.setText("");
+            errorMessage.setVisibility(View.INVISIBLE);
         }
     }
 }
