@@ -18,8 +18,8 @@ long pulse;
 int distance;
 
 // CONFIG WIFI
-const char* ssid        = "1";
-const char* password    = "12345678";
+const char* ssid        = "Boven 2.4GHz";
+const char* password    = "QWERTY12345";
 
 
 //CONFIG MQTT
@@ -62,8 +62,6 @@ void setup()
 
 void loop() 
 {
-
-
   if (WiFi.status() == WL_CONNECTED) {
     if( !mqttClient.connected() ) {
       mqtt_connect();
@@ -129,7 +127,9 @@ void mqtt_connect()
 
 void mqtt_pubish(boolean isAvailable)
 {
-  DynamicJsonDocument jsonDocument(2048);
+  Serial.printf("\ntopic:\n");
+  Serial.printf(mqtt_topic);
+  DynamicJsonDocument jsonDocument(1024);
 
   JsonObject colors = jsonDocument.createNestedObject("ledColor");
   colors["id"] = id;
@@ -138,8 +138,13 @@ void mqtt_pubish(boolean isAvailable)
 
   char json[1024];
   serializeJson(jsonDocument, json);
-  Serial.printf("%s\n", json);
-  mqttClient.publish(mqtt_topic, json);
+  Serial.printf("\nPayload: ");
+  Serial.printf(json);
+  if(mqttClient.publish(mqtt_topic, json) == true){
+    Serial.println("yay");
+  }else{
+    Serial.println("nay");
+  }
 }
 
 
