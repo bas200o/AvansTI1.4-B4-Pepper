@@ -16,6 +16,7 @@ import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.ListenResult;
 import com.b4.pepper.model.ISpeechToTextReceiver;
+import com.b4.pepper.model.LocaleHelper;
 import com.b4.pepper.model.SpeechRecognizer;
 import com.b4.pepper.ui.main.SectionsPagerAdapter;
 
@@ -47,6 +48,8 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 //                        .setAction("Action", null).show();
 //            }
 //        });
+
+        getActionBar().hide();
 
         LinearLayout tabStrip = ((LinearLayout)tabLayout.getChildAt(0));
         for(int i = 0; i < tabStrip.getChildCount(); i++) {
@@ -215,15 +218,16 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     public void onChangeLanguageClicked(View view)
     {
         System.out.println("CHANGE LANGUAGE CLICKED!");
+        LocaleHelper.setLocale(this.getApplicationContext(), "nl");
 
-        if (Build.VERSION.SDK_INT >= 17)
-        {
-            getResources().getConfiguration().setLocale(new Locale("nl"));
-        }
-        else
-        {
-            getResources().getConfiguration().locale = new Locale("nl");
-        }
-        getResources().updateConfiguration(getResources().getConfiguration(), getResources().getDisplayMetrics());
+//        if (Build.VERSION.SDK_INT >= 17)
+//        {
+//            getResources().getConfiguration().setLocale(new Locale("nl"));
+//        }
+//        else
+//        {
+//            getResources().getConfiguration().locale = new Locale("nl");
+//        }
+//        getResources().updateConfiguration(getResources().getConfiguration(), getResources().getDisplayMetrics());
     }
 }
