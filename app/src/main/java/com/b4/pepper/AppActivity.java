@@ -6,6 +6,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -49,7 +50,7 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 //            }
 //        });
 
-        getActionBar().hide();
+        //getActionBar().hide();
 
         LinearLayout tabStrip = ((LinearLayout)tabLayout.getChildAt(0));
         for(int i = 0; i < tabStrip.getChildCount(); i++) {
@@ -218,7 +219,16 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     public void onChangeLanguageClicked(View view)
     {
         System.out.println("CHANGE LANGUAGE CLICKED!");
-        LocaleHelper.setLocale(this.getApplicationContext(), "nl");
+
+        if(LocaleHelper.getLanguage(this.getApplicationContext()).equals("en"))
+        {
+            LocaleHelper.setLocale(this.getApplicationContext(), "nl");
+        }
+        else
+        {
+            LocaleHelper.setLocale(this.getApplicationContext(), "en");
+        }
+        recreate();
 
 //        if (Build.VERSION.SDK_INT >= 17)
 //        {
