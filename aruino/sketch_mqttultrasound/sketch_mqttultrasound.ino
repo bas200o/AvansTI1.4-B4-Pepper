@@ -12,14 +12,16 @@ const char* seats       = "8";
 int ledredpin = 14;
 int ledgreenpin = 15;
 
+char* testString = "{\"ledColor\":{\"id\":\"0\",\"isAvailable\":\"0\",\"seats\":\"8\"}}";
+
 int trigPin = 13;
 int echoPin = 12;
 long pulse;
 int distance;
 
 // CONFIG WIFI
-const char* ssid        = "Boven 2.4GHz";
-const char* password    = "QWERTY12345";
+const char* ssid        = "1";
+const char* password    = "12345678";
 
 
 //CONFIG MQTT
@@ -69,28 +71,26 @@ void loop()
       mqttClient.loop();
     }
 
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(5);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-
-  pulse = pulseIn(echoPin, HIGH);
-  distance = pulse / 29 / 2;
-  //Serial.println(distance);
-
-  if(distance < 80){
-    digitalWrite(ledredpin, true);
-    digitalWrite(ledgreenpin, false);
-    mqtt_pubish(false);
-  }else{
-    digitalWrite(ledgreenpin, true);
-    digitalWrite(ledredpin, false);
-    mqtt_pubish(true);
-  }
-
-    
-    
+    digitalWrite(trigPin, LOW);
+    delayMicroseconds(5);
+    digitalWrite(trigPin, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(trigPin, LOW);
+  
+    pulse = pulseIn(echoPin, HIGH);
+    distance = pulse / 29 / 2;
+    //Serial.println(distance);
+  
+    if(distance < 80){
+      digitalWrite(ledredpin, true);
+      digitalWrite(ledgreenpin, false);
+      mqtt_pubish(false);
+    }else{
+      digitalWrite(ledgreenpin, true);
+      digitalWrite(ledredpin, false);
+      mqtt_pubish(true);
+    }
+  
   } else { 
     Serial.println("Geen WiFi verbinding !");
     delay(900);
@@ -133,28 +133,40 @@ void mqtt_pubish(boolean isAvailable)
 
   JsonObject colors = jsonDocument.createNestedObject("ledColor");
   colors["id"] = id;
-  colors["isAvailable"] = isAvailable;
+  colors["isAvailable"] = String(isAvailable?1:0);
   colors["seats"] = seats;
 
   char json[1024];
+//  strcpy(json, "{\"esp\": {\"id\": ");
+//  strcat(json, 0);
+//  strcat(json, "\"}}");
+  
   serializeJson(jsonDocument, json);
   Serial.printf("\nPayload: ");
   Serial.printf(json);
-  if(mqttClient.publish(mqtt_topic, json) == true){
+  if(mqttClient.publish(mqtt_topic, testString)){
     Serial.println("yay");
   }else{
     Serial.println("nay");
   }
 }
 
+String charArrayToString(char* arr)
+{
+    String line = "";
+    int array_len = sizeof(arr)/sizeof(arr[0]);
+    for (int i = 0; i < array_len; i++) {
+      line += arr[i];
+    }
+    return line;
+}
 
 void mqtt_callback(char* topic, byte* payload, unsigned int length)
 {
+  
     if( 0 == strcmp(topic, mqtt_topic) ) {
     // Parse payload
     DynamicJsonDocument jsonDocument(1024);
-
-
     
     DeserializationError error = deserializeJson(jsonDocument, payload);
     if( !error ) {
