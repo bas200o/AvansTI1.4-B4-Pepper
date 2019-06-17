@@ -27,7 +27,7 @@ const char* password    = "12345678";
 //CONFIG MQTT
 const char* mqtt_broker   = "51.254.217.43";
 int         mqtt_port     = 1883;
-const char* mqtt_topic    = "dezeTopicNaamIsSpecifiekLangGemaaktOmAnderenWegTeHoudenVanOnzePrachtigePepperRobot";
+const char* mqtt_topic    = "B4Pepper420";
 const char* mqtt_username = "emon";
 const char* mqtt_password = "uw2ELjAKrEUwqgLT";
 
@@ -129,14 +129,14 @@ void mqtt_pubish(boolean isAvailable)
 {
   Serial.printf("\ntopic:\n");
   Serial.printf(mqtt_topic);
-  DynamicJsonDocument jsonDocument(1024);
+  DynamicJsonDocument jsonDocument(100);
 
   JsonObject colors = jsonDocument.createNestedObject("ledColor");
   colors["id"] = id;
   colors["isAvailable"] = String(isAvailable?1:0);
   colors["seats"] = seats;
 
-  char json[1024];
+  char json[100];
 //  strcpy(json, "{\"esp\": {\"id\": ");
 //  strcat(json, 0);
 //  strcat(json, "\"}}");
@@ -144,7 +144,7 @@ void mqtt_pubish(boolean isAvailable)
   serializeJson(jsonDocument, json);
   Serial.printf("\nPayload: ");
   Serial.printf(json);
-  if(mqttClient.publish(mqtt_topic, testString)){
+  if(mqttClient.publish(mqtt_topic, json)){
     Serial.println("yay");
   }else{
     Serial.println("nay");
