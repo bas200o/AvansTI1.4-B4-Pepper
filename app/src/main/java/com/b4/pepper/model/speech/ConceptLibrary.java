@@ -12,4 +12,6 @@ public class ConceptLibrary {
             "((ja|ok|graag|yup|(als..blieft)).*)";
     public static String MetHoeveelMensen =
             "\\d+.*";
+    public static String finish =
+            "((afronden|reserveer).*)";
 }

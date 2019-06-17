@@ -111,6 +111,7 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
                     this.conversationState = ConversationState.AskingNumberOfPeople;
                     Chat askChat = this.getChatBot(R.raw.met_hoeveel_mensen);
                     startChat(askChat, ConceptLibrary.MetHoeveelMensen);
+                    this.tabLayout.getTabAt(1).select();
                 }
                 else {
                     new SpeechModel(this.qiContext).sayMessage("Fijne dag nog");
@@ -119,10 +120,47 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
             }
             case AskingNumberOfPeople: {
                 new SpeechModel(this.qiContext).sayMessage("Zei je nou " + phrase + " mensen?");
-                break;
-            }
-            case Finishing: {
 
+                //TESTCODE
+                if(phrase.matches(ConceptLibrary.MetHoeveelMensen))
+                {
+                    int number = Integer.parseInt(phrase.split(" ")[0]);
+
+                    if(number > 40)
+                    {
+                        new SpeechModel(this.qiContext).sayMessage("Er kan geen tafel worden gereserveerd met " + number + " personen. Het maximale aantal is 40 personen.");
+                    }
+                    else
+                    {
+                        TextView personsCount = findViewById(R.id.personsCount);
+                        personsCount.setText(number);
+                    }
+                }
+                else if(phrase.matches(ConceptLibrary.finish))
+                {
+                    //Check if tables are free
+                    ////
+
+                    //Get the table number
+                    int tableNumber = 10;
+                    TextView tableNumberText = findViewById(R.id.tableNumber);
+                    tableNumberText.setText(tableNumber);
+
+                    new SpeechModel(this.qiContext).sayMessage("Je kunt gaan zitten aan tafel " + tableNumber);
+                    this.conversationState = ConversationState.Finishing;
+                    this.tabLayout.getTabAt(2).select();
+
+                    try {
+                        Thread.sleep(5000);
+                        TextView textView = findViewById(R.id.personsCount);
+                        textView.setText("");
+                        this.conversationState = ConversationState.Greeting;
+                        this.tabLayout.getTabAt(0).select();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                //END TESTCODE
                 break;
             }
         }
