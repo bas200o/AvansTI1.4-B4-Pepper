@@ -115,7 +115,7 @@ public class MqttBuilder extends AppCompatActivity {
                     esp.setSeats(jsonObject.getInt("seats"));
                     esp.setAvailable(jsonObject.getBoolean("isAvailable"));
 
-                    listener.receiveData(esp);
+                    //listener.receiveData(esp);
 
                 } catch (JSONException e) {
 
