@@ -38,7 +38,7 @@ public class SpeechRecognizer
         {
 //            Future<ListenResult> listenFuture = this.listener.async().run();
 //            this.speechToTextReceiver.onSpeechRecognized(listenFuture.getValue());
-            this.speechToTextReceiver.onSpeechRecognized(this.listener.run());
+            //this.speechToTextReceiver.onSpeechRecognized(this.listener.run());
         }
     }
 
