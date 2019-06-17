@@ -15,8 +15,8 @@ import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.ListenResult;
-import com.b4.pepper.model.Speech.ISpeechToTextReceiver;
-import com.b4.pepper.model.Speech.SpeechRecognizer;
+import com.b4.pepper.model.speech.ISpeechToTextReceiver;
+import com.b4.pepper.model.speech.SpeechRecognizer;
 import com.b4.pepper.ui.main.SectionsPagerAdapter;
 
 import java.util.Locale;

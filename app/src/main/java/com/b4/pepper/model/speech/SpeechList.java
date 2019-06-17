@@ -1,4 +1,4 @@
-package com.b4.pepper.model.Speech;
+package com.b4.pepper.model.speech;
 
 import java.util.ArrayList;
 

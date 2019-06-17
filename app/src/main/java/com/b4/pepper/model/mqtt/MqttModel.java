@@ -18,8 +18,8 @@ public class MqttModel extends IntentService {
     public MqttModel() {
 
         super(MqttModel.class.getSimpleName());
+
         Log.d(TAG, "MqttMessageService()");
-        //this.listener = listener;
     }
 
     @Override
