@@ -1,6 +1,5 @@
 package com.b4.pepper.model.speech;
 
-import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.object.conversation.Say;
@@ -24,13 +23,6 @@ public class SpeechModel {
     public void sayMessage(String message) {
 
         Say say = SayBuilder.with(this.qiContext).withText(message).build();
-        Future future = say.async().run();
-        try {
-            while (!future.isDone()){
-                Thread.sleep(50);
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        say.run();
     }
 }
