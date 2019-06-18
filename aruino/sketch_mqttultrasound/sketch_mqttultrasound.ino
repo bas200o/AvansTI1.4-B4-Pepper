@@ -4,7 +4,7 @@
 
 // CONFIG table
 /********************************************************************/
-const char* id          = "0";
+ int  id          = 1;
 const char* seats       = "8";
 /*********************************************************************/
 
@@ -59,18 +59,13 @@ void setup()
   Serial.println("Wifi Connected: ");
   Serial.println(WiFi.localIP());
   
+  digitalWrite(ledgreenpin, true);
 }
 
 
 void loop() 
 {
   if (WiFi.status() == WL_CONNECTED) {
-    if( !mqttClient.connected() ) {
-      mqtt_connect();
-    } else {
-      mqttClient.loop();
-    }
-
     digitalWrite(trigPin, LOW);
     delayMicroseconds(5);
     digitalWrite(trigPin, HIGH);
@@ -79,9 +74,23 @@ void loop()
   
     pulse = pulseIn(echoPin, HIGH);
     distance = pulse / 29 / 2;
-    //Serial.println(distance);
-  
-    if(distance < 80){
+ 
+    if( !mqttClient.connected() ) {
+      mqtt_connect();
+    } else {
+      mqttClient.loop();
+    }
+
+  } else { 
+    Serial.println("Geen WiFi verbinding !");
+    delay(900);
+  }
+  delay(1000);
+}
+
+
+void checkAndSendStatus(){
+      if(distance < 80){
       digitalWrite(ledredpin, true);
       digitalWrite(ledgreenpin, false);
       mqtt_pubish(false);
@@ -90,14 +99,15 @@ void loop()
       digitalWrite(ledredpin, false);
       mqtt_pubish(true);
     }
-  
-  } else { 
-    Serial.println("Geen WiFi verbinding !");
-    delay(900);
-  }
-  delay(1000);
 }
 
+void reserve(){
+      
+      digitalWrite(ledgreenpin, true);
+      digitalWrite(ledredpin, true);
+      delay(10000);
+      digitalWrite(ledgreenpin, false);
+}
 
 void mqtt_connect() 
 {
@@ -131,24 +141,16 @@ void mqtt_pubish(boolean isAvailable)
   Serial.printf(mqtt_topic);
   DynamicJsonDocument jsonDocument(100);
 
-  JsonObject colors = jsonDocument.createNestedObject("ledColor");
-  colors["id"] = id;
-  colors["isAvailable"] = String(isAvailable?1:0);
-  colors["seats"] = seats;
+  JsonObject info = jsonDocument.createNestedObject("");
+  info["id"] = id;
+  info["isAvailable"] = isAvailable;
+  info["seats"] = seats;
 
   char json[100];
-//  strcpy(json, "{\"esp\": {\"id\": ");
-//  strcat(json, 0);
-//  strcat(json, "\"}}");
-  
   serializeJson(jsonDocument, json);
   Serial.printf("\nPayload: ");
   Serial.printf(json);
-  if(mqttClient.publish(mqtt_topic, json)){
-    Serial.println("yay");
-  }else{
-    Serial.println("nay");
-  }
+  mqttClient.publish(mqtt_topic, json);
 }
 
 String charArrayToString(char* arr)
@@ -164,19 +166,30 @@ String charArrayToString(char* arr)
 void mqtt_callback(char* topic, byte* payload, unsigned int length)
 {
   
+    Serial.println("hey a message");
     if( 0 == strcmp(topic, mqtt_topic) ) {
     // Parse payload
     DynamicJsonDocument jsonDocument(1024);
     
     DeserializationError error = deserializeJson(jsonDocument, payload);
     if( !error ) {
-      JsonVariant msg = jsonDocument["esp"];
-      if(!msg.isNull()) {
-        // Flits de blauwe led
-        digitalWrite(ledredpin, false);
-        delay(50);
-        digitalWrite(ledredpin, true);
-      }
+        bool jsonGet = jsonDocument["get"];
+        Serial.println("got ");
+        
+        if(jsonGet == true){
+          Serial.printf("true");
+          Serial.print(jsonGet);
+          checkAndSendStatus();
+        }else{
+            int jsonID = jsonDocument["id"];
+            Serial.println("id ");
+            Serial.print(jsonID);
+            if(jsonID == id){
+              reserve();
+            }
+        }
+    }else{
+      Serial.println("error reading message");
     }
   }
 }
