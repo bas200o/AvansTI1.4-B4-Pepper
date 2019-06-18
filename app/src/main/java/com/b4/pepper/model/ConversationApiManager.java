@@ -1,8 +1,8 @@
 package com.b4.pepper.model;
 
 public class ConversationApiManager {
-    private ConversationApiManager instance;
-    public ConversationApiManager getInstance(){
+    private static ConversationApiManager instance;
+    public static ConversationApiManager getInstance(){
         if (instance == null){
             instance = new ConversationApiManager();
         }
