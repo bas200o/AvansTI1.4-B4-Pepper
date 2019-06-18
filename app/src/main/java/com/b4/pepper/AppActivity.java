@@ -151,8 +151,9 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
             @Override
             public void onHeard(Phrase heardPhrase) {
                 Log.d("chat onheard", heardPhrase.getText());
-                String phrase = heardPhrase.getText();
+                String phrase = heardPhrase.getText().toLowerCase();
                 if (phrase.matches(exitPhraseRegex)){
+                    Log.d("chat onheard", "input matches exit regex");
                     chatFuture.cancel(true);
                     chatFuture.requestCancellation();
                     while (!chat.getSaying().getText().equals("")) {
@@ -162,17 +163,13 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
                             e.printStackTrace();
                         }
                     }
-                    //handleConversationEnd(phrase);
                     onSpeechRecognized(phrase);
+                }
+                else {
+                    Log.d("chat onheard", "input does not match exit regex");
                 }
             }
         });
-    }
-
-    private void handleConversationEnd(String lastUserPhrase){
-        Log.d("acting like a parrot", lastUserPhrase);
-        new SpeechModel(this.qiContext).sayMessage(lastUserPhrase);
-        this.startNewConversation();
     }
 
     @Override
