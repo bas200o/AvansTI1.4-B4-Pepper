@@ -102,6 +102,7 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     }
 
     private void startNetConversationAsync(){
+        this.setTab(0);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -115,25 +116,38 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         Log.d("Human input", phrase);
         switch (this.conversationState){
             case Greeting: {
+                Log.d("Listening Greeting", phrase);
                 if (phrase.matches(ConceptLibrary.greetingsPositive)){
+
+                    this.setTab(1);
                     new SpeechModel(qiContext).sayMessage("Met hoeveel mensen?");
                     this.conversationState = ConversationState.AskingNumberOfPeople;
                     Chat askChat = this.getChatBot(R.raw.met_hoeveel_mensen);
                     startChat(askChat, ConceptLibrary.MetHoeveelMensen);
                 }
                 else {
+                    this.setTab(0);
                     new SpeechModel(this.qiContext).sayMessage("Fijne dag nog");
                     this.startNetConversationAsync();
                 }
                 break;
             }
             case AskingNumberOfPeople: {
+                Log.d("Listening AskingNumPeo", phrase);
                 int numberOfPeople = Integer.parseInt(phrase);
+                this.setNumberOfPeopleText(Integer.parseInt(phrase));
                 if (ConversationApiManager.getInstance().getTablesAvailable(numberOfPeople) > 0){
+                    this.setTab(2);
                     new SpeechModel(this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
                 }
                 else {
+                    this.setTab(0);
                     new SpeechModel(this.qiContext).sayMessage("Sorry, er zijn geen tafels beschikbaar");
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 this.startNetConversationAsync();
                 break;
@@ -192,7 +206,36 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
     public void onWantsTableButton(View view)
     {
-        this.tabLayout.getTabAt(1).select();
+        onWantsTableButton();
+    }
+
+    public void onWantsTableButton() {
+        this.setTab(1);
+    }
+
+    private void setTab(final int index) {
+        runOnUiThread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    tabLayout.getTabAt(index).select();
+                }
+            }
+        );
+    }
+
+    private void setNumberOfPeopleText(final int number){
+        runOnUiThread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    TextView personsCountText = findViewById(R.id.personsCount);
+                    personsCountText.setText(
+                        number + ""
+                    );
+                }
+            }
+        );
     }
 
     public void onPersonsButtonClicked(View view)
