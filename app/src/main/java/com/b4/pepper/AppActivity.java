@@ -21,7 +21,6 @@ import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
-import com.aldebaran.qi.sdk.object.conversation.ListenResult;
 import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
@@ -29,7 +28,7 @@ import com.b4.pepper.model.speech.ConceptLibrary;
 import com.b4.pepper.model.speech.ConversationState;
 import com.b4.pepper.model.speech.ISpeechToTextReceiver;
 import com.b4.pepper.model.speech.SpeechModel;
-import com.b4.pepper.model.speech.SpeechRecognizer;
+import com.b4.pepper.ui.NonSwipeableViewPager;
 import com.b4.pepper.ui.main.SectionsPagerAdapter;
 
 import java.util.Locale;
