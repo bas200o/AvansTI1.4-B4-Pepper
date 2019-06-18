@@ -123,8 +123,8 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
                 }
                 else {
                     new SpeechModel(this.qiContext).sayMessage("Fijne dag nog");
+                    this.startNetConversationAsync();
                 }
-                this.startNetConversationAsync();
                 break;
             }
             case AskingNumberOfPeople: {
