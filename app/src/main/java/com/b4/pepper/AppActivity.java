@@ -24,6 +24,7 @@ import com.aldebaran.qi.sdk.object.conversation.Chat;
 import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
+import com.b4.pepper.model.ConversationApiManager;
 import com.b4.pepper.model.speech.ConceptLibrary;
 import com.b4.pepper.model.speech.ConversationState;
 import com.b4.pepper.model.speech.ISpeechToTextReceiver;
@@ -100,6 +101,15 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         startChat(greetingChat, ConceptLibrary.greetings);
     }
 
+    private void startNetConversationAsync(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                startNewConversation();
+            }
+        }).start();
+    }
+
     @Override
     public void onSpeechRecognized(String phrase) {
         Log.d("Human input", phrase);
@@ -114,14 +124,22 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
                 else {
                     new SpeechModel(this.qiContext).sayMessage("Fijne dag nog");
                 }
+                this.startNetConversationAsync();
                 break;
             }
             case AskingNumberOfPeople: {
-                new SpeechModel(this.qiContext).sayMessage("Zei je nou " + phrase + " mensen?");
+                int numberOfPeople = Integer.parseInt(phrase);
+                if (ConversationApiManager.getInstance().getTablesAvailable(numberOfPeople) > 0){
+                    new SpeechModel(this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
+                }
+                else {
+                    new SpeechModel(this.qiContext).sayMessage("Sorry, er zijn geen tafels beschikbaar");
+                }
+                this.startNetConversationAsync();
                 break;
             }
             case Finishing: {
-
+                // Not used
                 break;
             }
         }
