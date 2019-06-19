@@ -4,15 +4,13 @@
 
 // CONFIG table
 /********************************************************************/
- int  id          = 1;
+int  id                 = 1;
 const char* seats       = "8";
 /*********************************************************************/
 
 // CONFIG Pins
 int ledredpin = 14;
 int ledgreenpin = 15;
-
-char* testString = "{\"ledColor\":{\"id\":\"0\",\"isAvailable\":\"0\",\"seats\":\"8\"}}";
 
 int trigPin = 13;
 int echoPin = 12;
@@ -88,7 +86,7 @@ void loop()
   delay(1000);
 }
 
-
+//checkt of de tafel beschikbaar is en stuurt via mqtt de beschikbaarheid
 void checkAndSendStatus(){
       if(distance < 80){
       digitalWrite(ledredpin, true);
@@ -101,14 +99,15 @@ void checkAndSendStatus(){
     }
 }
 
+//reserveerd de tafel en laat voor 10 seconden oranje branden en daarna rood.
 void reserve(){
-      
       digitalWrite(ledgreenpin, true);
       digitalWrite(ledredpin, true);
       delay(10000);
       digitalWrite(ledgreenpin, false);
 }
 
+//verbind de esp met de mqttserver
 void mqtt_connect() 
 {
   mqttClient.setClient(wifiClient);
@@ -134,17 +133,16 @@ void mqtt_connect()
   }
 }
 
-
+//stuurt naar de mqtt server de beschikbaarheid
 void mqtt_pubish(boolean isAvailable)
 {
-  Serial.printf("\ntopic:\n");
   Serial.printf(mqtt_topic);
   DynamicJsonDocument jsonDocument(100);
 
-  JsonObject info = jsonDocument.createNestedObject("");
-  info["id"] = id;
-  info["isAvailable"] = isAvailable;
-  info["seats"] = seats;
+  //JsonObject info = jsonDocument.createNestedObject("");
+  jsonDocument["id"] = id;
+  jsonDocument["isAvailable"] = isAvailable;
+  jsonDocument["seats"] = seats;
 
   char json[100];
   serializeJson(jsonDocument, json);
@@ -153,43 +151,39 @@ void mqtt_pubish(boolean isAvailable)
   mqttClient.publish(mqtt_topic, json);
 }
 
-String charArrayToString(char* arr)
-{
-    String line = "";
-    int array_len = sizeof(arr)/sizeof(arr[0]);
-    for (int i = 0; i < array_len; i++) {
-      line += arr[i];
-    }
-    return line;
-}
-
+//kijkt voor nieuwe berichten in de mqtt server en parced de berichten voor ons
 void mqtt_callback(char* topic, byte* payload, unsigned int length)
 {
   
-    Serial.println("hey a message");
+    Serial.println("\n\nA new mqtt message");
     if( 0 == strcmp(topic, mqtt_topic) ) {
     // Parse payload
     DynamicJsonDocument jsonDocument(1024);
     
     DeserializationError error = deserializeJson(jsonDocument, payload);
     if( !error ) {
-        bool jsonGet = jsonDocument["get"];
-        Serial.println("got ");
-        
-        if(jsonGet == true){
-          Serial.printf("true");
-          Serial.print(jsonGet);
-          checkAndSendStatus();
+        int jsonGet = jsonDocument["get"];
+        Serial.print("jsonGet got a: ");
+        Serial.print(jsonGet);
+        if(jsonGet == 1){
+                
+           Serial.print(jsonGet);
+           checkAndSendStatus();
+                
+        }else if(jsonGet == 2){
+                
+           int jsonID = jsonDocument["id"];
+           Serial.println("\nid ");
+           Serial.print(jsonID);
+                
+           if(jsonID == id){
+               reserve();
+           }
         }else{
-            int jsonID = jsonDocument["id"];
-            Serial.println("id ");
-            Serial.print(jsonID);
-            if(jsonID == id){
-              reserve();
-            }
+            Serial.print("This message cant be parced here.");
         }
     }else{
-      Serial.println("error reading message");
+        Serial.println("error reading message");
     }
   }
 }
