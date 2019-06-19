@@ -46,8 +46,8 @@ public class MqttBuilder {
 
         try {
 
-            Intent intent = new Intent(MqttBuilder.this, MqttModel.class);
-            startService(intent);
+            Intent intent = new Intent(AppActivity.getContext(), MqttModel.class);
+            AppActivity.getContext().startService(intent);
 
         } catch (Exception e) {
 
