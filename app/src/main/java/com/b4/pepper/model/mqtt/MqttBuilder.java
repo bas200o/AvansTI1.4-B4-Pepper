@@ -3,6 +3,7 @@ package com.b4.pepper.model.mqtt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.util.Log;
 
 import com.b4.pepper.AppActivity;
@@ -32,6 +33,7 @@ public class MqttBuilder {
     private MqttAndroidClient client;
     private MqttListener listener;
     private MqttClient mqttClient;
+    private BroadcastReceiver broadcastReceiver;
 
     public MqttBuilder(MqttListener listener) {
 
@@ -48,6 +50,11 @@ public class MqttBuilder {
     private void start() {
 
         try {
+            this.broadcastReceiver = new MqttBroadcastReceiver();
+
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(MQTT_BROADCAST_ACTION);
+            AppActivity.getContext().registerReceiver(broadcastReceiver, intentFilter);
 
             Intent intent = new Intent(AppActivity.getContext(), MqttModel.class);
             AppActivity.getContext().startService(intent);
