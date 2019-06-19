@@ -21,7 +21,6 @@ public class TableManager implements MqttListener {
     }
 
     public void reserveTable(final int amountOfPersons) {
-
         this.mqttBuilder.sendJson(true, 0);
         gatherEsps();
         pickEsp(amountOfPersons);
