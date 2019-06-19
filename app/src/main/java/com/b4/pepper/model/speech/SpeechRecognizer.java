@@ -1,4 +1,4 @@
-package com.b4.pepper.model.Speech;
+package com.b4.pepper.model.speech;
 
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.builder.ListenBuilder;
@@ -38,7 +38,7 @@ public class SpeechRecognizer
         {
 //            Future<ListenResult> listenFuture = this.listener.async().run();
 //            this.speechToTextReceiver.onSpeechRecognized(listenFuture.getValue());
-            this.speechToTextReceiver.onSpeechRecognized(this.listener.run());
+            //this.speechToTextReceiver.onSpeechRecognized(this.listener.run());
         }
     }
 

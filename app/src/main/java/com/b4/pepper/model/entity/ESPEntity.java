@@ -1,4 +1,4 @@
-package com.b4.pepper.model.Entity;
+package com.b4.pepper.model.entity;
 
 public class ESPEntity {
 

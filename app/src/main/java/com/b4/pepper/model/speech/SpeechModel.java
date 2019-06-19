@@ -1,6 +1,5 @@
-package com.b4.pepper.model.Speech;
+package com.b4.pepper.model.speech;
 
-import com.aldebaran.qi.sdk.Qi;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.builder.SayBuilder;
 import com.aldebaran.qi.sdk.object.conversation.Say;

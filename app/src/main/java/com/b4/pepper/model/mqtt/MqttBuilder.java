@@ -6,8 +6,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.b4.pepper.model.Entity.ESPEntity;
-import com.b4.pepper.model.mqtt.mqttfromdiederich.MQTTConfig;
+import com.b4.pepper.model.entity.ESPEntity;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -27,13 +26,17 @@ public class MqttBuilder extends AppCompatActivity {
 
     // attributes
     private MqttAndroidClient client;
+    private MqttListener listener;
     private MqttClient mqttClient;
 
-    public MqttBuilder() {
+    public MqttBuilder(MqttListener listener) {
+
 
         this.mqttClient = new MqttClient();
 
         this.client = this.mqttClient.getMqttClient(getApplicationContext(), MQTT_BROKER_URL, MQTT_CLIENT_ID);
+
+        this.listener = listener;
 
         this.start();
     }
@@ -81,7 +84,7 @@ public class MqttBuilder extends AppCompatActivity {
 
         try {
 
-            this.mqttClient.unSubscribe(this.client, MQTTConfig.getInstance().PUBLISH_TOPIC());
+            this.mqttClient.unSubscribe(this.client, MQTT_TOPIC);
 
         } catch (MqttException e) {
 
@@ -111,6 +114,8 @@ public class MqttBuilder extends AppCompatActivity {
                     esp.setId(jsonObject.getInt("id"));
                     esp.setSeats(jsonObject.getInt("seats"));
                     esp.setAvailable(jsonObject.getBoolean("isAvailable"));
+
+                    //listener.receiveData(esp);
 
                 } catch (JSONException e) {
 

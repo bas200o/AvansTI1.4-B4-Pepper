@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Pepper</string>
+    <string name="title_activity_app">AppActivity</string>
+    <string name="tab_text_1">Request</string>
+    <string name="tab_text_2">People</string>
+    <string name="tab_text_3">Finished</string>
+
+    <!--&lt;!&ndash; TODO: Remove or change this placeholder text &ndash;&gt;-->
+    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
+
+    <string name="tipText">Speak to Pepper or type on the screen</string>
+    <string name="reserverQuestionText">Do you want a table?</string>
+    <string name="yesText">Yes</string>
+
+    <string name="personAmmountText">With how many persons are you</string>
+    <string name="reserverText">Finish</string>
+    <string name="invalidInputMessageText">Incorrect input</string>
+    <string name="toManyPersonsMessageText">To many people</string>
+
+    <string name="finishText">You can sit at table</string>
+</resources>
