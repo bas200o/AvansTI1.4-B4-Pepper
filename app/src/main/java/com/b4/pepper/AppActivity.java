@@ -24,6 +24,7 @@ import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.b4.pepper.model.ThreadingHelper;
+import com.b4.pepper.model.entity.ESPEntity;
 import com.b4.pepper.model.mqtt.TableManager;
 import com.b4.pepper.model.speech.ConceptLibrary;
 import com.b4.pepper.model.speech.ConversationState;
@@ -305,20 +306,24 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         new Thread(new Runnable() {
             @Override
             public void run() {
-                int tableId = -1;
+
+                ESPEntity table = null;
+
                 try {
                     TableManager tableManager = new TableManager();
                     tableManager.reserveTable(numberOfPeople);
-                    tableId = tableManager.getPickedTable().getId();
+                    table = tableManager.getPickedTable();
+
+
                 } catch (Exception ex) { ex.printStackTrace(); Log.d("getting table", "mqtt error");}
 
-                if (tableId != -1) {
+                if (table != null) {
 
                     AppActivity.this.setTab(2);
                     new SpeechModel(AppActivity.this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
-                    Log.i("TABLE_ID", "the tableID: " + tableId);
+                    Log.i("TABLE_ID", "the tableID: " + table.getId());
                     TextView tableNumberView = findViewById(R.id.tableNumber);
-                    tableNumberView.setText(tableId);
+                    tableNumberView.setText(table.getId());
 
                 } else {
 
