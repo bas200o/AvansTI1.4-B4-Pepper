@@ -20,7 +20,7 @@ import java.util.UUID;
 public class MqttBuilder {
 
     // configuration
-    public static final String MQTT_TOPIC = "dezeTopicNaamIsSpecifiekLangGemaaktOmAnderenWegTeHoudenVanOnzePrachtigePepperRobot";
+    public static final String MQTT_TOPIC = "B4Pepper420";
     public static final String MQTT_CLIENT_ID = "MY_ID_" + UUID.randomUUID().toString();
     public static final String MQTT_BROKER_URL = "tcp://51.254.217.43:1883";
     public static final String MQTT_BROADCAST_ACTION = "com.b4.pepper";
