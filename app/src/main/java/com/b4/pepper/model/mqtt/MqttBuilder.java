@@ -41,7 +41,7 @@ public class MqttBuilder extends AppCompatActivity {
         this.start();
     }
 
-    public void start() {
+    private void start() {
 
         try {
 
