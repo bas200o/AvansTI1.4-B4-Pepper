@@ -28,6 +28,7 @@ import com.b4.pepper.model.mqtt.TableManager;
 import com.b4.pepper.model.speech.ConceptLibrary;
 import com.b4.pepper.model.speech.ConversationState;
 import com.b4.pepper.model.speech.ISpeechToTextReceiver;
+import com.b4.pepper.model.speech.LocaleHelper;
 import com.b4.pepper.model.speech.SpeechModel;
 import com.b4.pepper.ui.NonSwipeableViewPager;
 import com.b4.pepper.ui.main.SectionsPagerAdapter;
@@ -408,14 +409,14 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
     public void onChangeLanguageClicked(View view) {
 
-        System.out.println("CHANGE LANGUAGE CLICKED!");
-
-        if (Build.VERSION.SDK_INT >= 17)
-            getResources().getConfiguration().setLocale(new Locale("nl"));
-
+        if(LocaleHelper.getLanguage(this.getApplicationContext()).equals("en"))
+        {
+            LocaleHelper.setLocale(this.getApplicationContext(), "nl");
+        }
         else
-            getResources().getConfiguration().locale = new Locale("nl");
-
-        getResources().updateConfiguration(getResources().getConfiguration(), getResources().getDisplayMetrics());
+        {
+            LocaleHelper.setLocale(this.getApplicationContext(), "en");
+        }
+        recreate();
     }
 }
