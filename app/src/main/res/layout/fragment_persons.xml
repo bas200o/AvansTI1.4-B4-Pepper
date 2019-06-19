@@ -84,7 +84,7 @@
             app:layout_constraintTop_toTopOf="@+id/guideline" />
 
         <Button
-            android:id="@+id/button16"
+            android:id="@+id/btnConfirmPersons"
             android:layout_width="180px"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
