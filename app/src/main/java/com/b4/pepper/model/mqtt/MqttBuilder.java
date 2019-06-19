@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.b4.pepper.AppActivity;
 import com.b4.pepper.model.entity.ESPEntity;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
@@ -16,10 +17,10 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
-public class MqttBuilder extends AppCompatActivity {
+public class MqttBuilder {
 
     // configuration
-    public static final String MQTT_TOPIC = "dezeTopicNaamIsSpecifiekLangGemaaktOmAnderenWegTeHoudenVanOnzePrachtigePepperRobot";
+    public static final String MQTT_TOPIC = "B4Pepper420";
     public static final String MQTT_CLIENT_ID = "MY_ID_" + UUID.randomUUID().toString();
     public static final String MQTT_BROKER_URL = "tcp://51.254.217.43:1883";
     public static final String MQTT_BROADCAST_ACTION = "com.b4.pepper";
@@ -34,7 +35,7 @@ public class MqttBuilder extends AppCompatActivity {
 
         this.mqttClient = new MqttClient();
 
-        this.client = this.mqttClient.getMqttClient(getApplicationContext(), MQTT_BROKER_URL, MQTT_CLIENT_ID);
+        this.client = this.mqttClient.getMqttClient(AppActivity.getContext(), MQTT_BROKER_URL, MQTT_CLIENT_ID);
 
         this.listener = listener;
 
@@ -45,8 +46,8 @@ public class MqttBuilder extends AppCompatActivity {
 
         try {
 
-            Intent intent = new Intent(MqttBuilder.this, MqttModel.class);
-            startService(intent);
+            Intent intent = new Intent(AppActivity.getContext(), MqttModel.class);
+            AppActivity.getContext().startService(intent);
 
         } catch (Exception e) {
 
@@ -115,7 +116,7 @@ public class MqttBuilder extends AppCompatActivity {
                     esp.setSeats(jsonObject.getInt("seats"));
                     esp.setAvailable(jsonObject.getBoolean("isAvailable"));
 
-                    //listener.receiveData(esp);
+                    listener.receiveESP(esp);
 
                 } catch (JSONException e) {
 

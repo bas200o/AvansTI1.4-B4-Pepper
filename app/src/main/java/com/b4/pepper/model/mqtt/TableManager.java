@@ -20,15 +20,10 @@ public class TableManager implements MqttListener {
         this.esps = new ArrayList<>();
     }
 
-    public void reserveTable(int amountOfPersons) {
-
-        new Thread(() -> {
-
-            this.mqttBuilder.sendJson(true, 0);
-            this.gatherEsps();
-            this.pickEsp(amountOfPersons);
-
-        }).start();
+    public void reserveTable(final int amountOfPersons) {
+        this.mqttBuilder.sendJson(true, 0);
+        gatherEsps();
+        pickEsp(amountOfPersons);
     }
 
     public ESPEntity getPickedTable() {

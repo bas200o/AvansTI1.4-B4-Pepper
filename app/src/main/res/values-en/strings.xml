@@ -15,7 +15,7 @@
     <string name="personAmmountText">With how many persons are you</string>
     <string name="reserverText">Finish</string>
     <string name="invalidInputMessageText">Incorrect input</string>
-    <string name="toManyPersonsMessageText">To many people</string>
+    <string name="toManyPersonsMessageText">Too many people</string>
 
     <string name="finishText">You can sit at table</string>
 </resources>
