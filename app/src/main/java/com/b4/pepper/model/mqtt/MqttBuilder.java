@@ -3,7 +3,6 @@ package com.b4.pepper.model.mqtt;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.b4.pepper.AppActivity;
@@ -20,10 +19,14 @@ import java.util.UUID;
 public class MqttBuilder {
 
     // configuration
-    public static final String MQTT_TOPIC = "B4Pepper420";
-    public static final String MQTT_CLIENT_ID = "MY_ID_" + UUID.randomUUID().toString();
-    public static final String MQTT_BROKER_URL = "tcp://51.254.217.43:1883";
+    public static final String MQTT_TOPIC            = "B4Pepper420";
+    public static final String MQTT_CLIENT_ID        = "MY_ID_" + UUID.randomUUID().toString();
+    public static final String MQTT_BROKER_URL       = "tcp://51.254.217.43:1883";
     public static final String MQTT_BROADCAST_ACTION = "com.b4.pepper";
+
+    // states
+    public static final int GET_STATE_READ = 1;
+    public static final int GET_STATE_SET  = 2;
 
     // attributes
     private MqttAndroidClient client;
@@ -55,7 +58,7 @@ public class MqttBuilder {
         }
     }
 
-    public void sendJson(boolean get, int id) {
+    public void sendJson(int get, int id) {
 
         String json = "{\"get\": " + get + ", \"id\": " + id + "}";
 

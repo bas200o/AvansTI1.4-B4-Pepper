@@ -21,7 +21,8 @@ public class TableManager implements MqttListener {
     }
 
     public void reserveTable(final int amountOfPersons) {
-        this.mqttBuilder.sendJson(true, 0);
+
+        this.mqttBuilder.sendJson(MqttBuilder.GET_STATE_READ, 0);
         gatherEsps();
         pickEsp(amountOfPersons);
     }
@@ -52,7 +53,7 @@ public class TableManager implements MqttListener {
 
             if (esp.isAvailable() && esp.getSeats() >= amountOfPersons) {
 
-                this.mqttBuilder.sendJson(false, esp.getId());
+                this.mqttBuilder.sendJson(MqttBuilder.GET_STATE_SET, esp.getId());
                 this.pickedTable = esp;
 
                 return;
