@@ -25,6 +25,7 @@ import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.b4.pepper.model.ConversationApiManager;
+import com.b4.pepper.model.ThreadingHelper;
 import com.b4.pepper.model.speech.ConceptLibrary;
 import com.b4.pepper.model.speech.ConversationState;
 import com.b4.pepper.model.speech.ISpeechToTextReceiver;
@@ -81,10 +82,19 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         super.onDestroy();
     }
 
-    private Chat getChatBot(int chat){
-        Topic topic = TopicBuilder.with(qiContext).withResource(chat).build();
-        QiChatbot qiChatbot = QiChatbotBuilder.with(qiContext).withTopic(topic).build();
-        return ChatBuilder.with(qiContext).withChatbot(qiChatbot).build();
+    private Chat getChatBot(final int chatResource){
+        final Chat[] chat = new Chat[1];
+        ThreadingHelper.runOffMainThreadSynchronous(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        Topic topic = TopicBuilder.with(qiContext).withResource(chatResource).build();
+                        QiChatbot qiChatbot = QiChatbotBuilder.with(qiContext).withTopic(topic).build();
+                        chat[0] = ChatBuilder.with(qiContext).withChatbot(qiChatbot).build();
+                    }
+                }
+        );
+        return chat[0];
     }
 
     @Override
@@ -97,8 +107,9 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
     private void startNewConversation() {
         this.conversationState = ConversationState.Greeting;
-        Chat greetingChat = getChatBot(R.raw.greetings);
-        startChat(greetingChat, ConceptLibrary.greetings);
+        this.setNumberOfPeopleText(0);
+        ThreadingHelper.setChat(getChatBot(R.raw.greetings));
+        startChat(ThreadingHelper.getChat(), ConceptLibrary.greetings);
     }
 
     private void startNetConversationAsync(){
@@ -111,6 +122,30 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         }).start();
     }
 
+    private void askNumberOfPeople(){
+        this.setTab(1);
+        new SpeechModel(qiContext).sayMessage("Met hoeveel mensen?");
+        this.conversationState = ConversationState.AskingNumberOfPeople;
+        ThreadingHelper.setChat(this.getChatBot(R.raw.met_hoeveel_mensen));
+        startChat(ThreadingHelper.getChat(), ConceptLibrary.MetHoeveelMensen);
+    }
+
+    private void runLater(final int waitTime, final Runnable toRun) {
+        new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(waitTime);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        toRun.run();
+                    }
+                }
+        ).start();
+    }
+
     @Override
     public void onSpeechRecognized(String phrase) {
         Log.d("Human input", phrase);
@@ -118,12 +153,7 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
             case Greeting: {
                 Log.d("Listening Greeting", phrase);
                 if (phrase.matches(ConceptLibrary.greetingsPositive)){
-
-                    this.setTab(1);
-                    new SpeechModel(qiContext).sayMessage("Met hoeveel mensen?");
-                    this.conversationState = ConversationState.AskingNumberOfPeople;
-                    Chat askChat = this.getChatBot(R.raw.met_hoeveel_mensen);
-                    startChat(askChat, ConceptLibrary.MetHoeveelMensen);
+                    this.askNumberOfPeople();
                 }
                 else {
                     this.setTab(0);
@@ -135,21 +165,8 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
             case AskingNumberOfPeople: {
                 Log.d("Listening AskingNumPeo", phrase);
                 int numberOfPeople = Integer.parseInt(phrase);
-                this.setNumberOfPeopleText(Integer.parseInt(phrase));
-                if (ConversationApiManager.getInstance().getTablesAvailable(numberOfPeople) > 0){
-                    this.setTab(2);
-                    new SpeechModel(this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
-                }
-                else {
-                    this.setTab(0);
-                    new SpeechModel(this.qiContext).sayMessage("Sorry, er zijn geen tafels beschikbaar");
-                }
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                this.startNetConversationAsync();
+                this.setNumberOfPeopleText(numberOfPeople);
+                this.handleTableRequest(numberOfPeople);
                 break;
             }
             case Finishing: {
@@ -160,30 +177,29 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     }
 
     private void startChat(final Chat chat, final String exitPhraseRegex){
-        final Future<Void> chatFuture = chat.async().run();
-        chat.addOnHeardListener(new Chat.OnHeardListener() {
-            @Override
-            public void onHeard(Phrase heardPhrase) {
-                Log.d("chat onheard", heardPhrase.getText());
-                String phrase = heardPhrase.getText().toLowerCase();
-                if (phrase.matches(exitPhraseRegex)){
-                    Log.d("chat onheard", "input matches exit regex");
-                    chatFuture.cancel(true);
-                    chatFuture.requestCancellation();
-                    while (!chat.getSaying().getText().equals("")) {
-                        try {
-                            Thread.sleep(10);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+        ThreadingHelper.setChatFuture(chat.async().run());
+        ThreadingHelper.runOffMainThreadSynchronous(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        chat.addOnHeardListener(new Chat.OnHeardListener() {
+                            @Override
+                            public void onHeard(Phrase heardPhrase) {
+                                Log.d("chat onheard", heardPhrase.getText());
+                                String phrase = heardPhrase.getText().toLowerCase();
+                                if (phrase.matches(exitPhraseRegex)){
+                                    Log.d("chat onheard", "input matches exit regex");
+                                    ThreadingHelper.stopChat();
+                                    onSpeechRecognized(phrase);
+                                }
+                                else {
+                                    Log.d("chat onheard", "input does not match exit regex");
+                                }
+                            }
+                        });
                     }
-                    onSpeechRecognized(phrase);
                 }
-                else {
-                    Log.d("chat onheard", "input does not match exit regex");
-                }
-            }
-        });
+        );
     }
 
     @Override
@@ -210,7 +226,10 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     }
 
     public void onWantsTableButton() {
-        this.setTab(1);
+        try {
+            ThreadingHelper.stopChat();
+        } catch (Exception ex) { }
+        this.askNumberOfPeople();
     }
 
     private void setTab(final int index) {
@@ -259,33 +278,35 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         } catch(Exception e) { }
     }
 
+    private void handleTableRequest(int numberOfPeople){
+        if (ConversationApiManager.getInstance().getTablesAvailable(numberOfPeople) > 0){
+            this.setTab(2);
+            new SpeechModel(this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
+        }
+        else {
+            this.setTab(0);
+            new SpeechModel(this.qiContext).sayMessage("Sorry, er zijn geen tafels beschikbaar");
+        }
+        this.runLater(
+                1000,
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        startNetConversationAsync();
+                    }
+                }
+        );
+    }
+
     public void onTableReserve(View view)
     {
-        TextView errorMessage = findViewById(R.id.errorMessage);
+        try {
+            ThreadingHelper.stopChat();
+        } catch (NullPointerException ex) { }
         EditText personCountText = findViewById(R.id.personsCount);
         String text = personCountText.getText().toString();
-
-        try
-        {
-            int numberOfPersons = Integer.parseInt(text);
-
-            if(numberOfPersons > 0 && numberOfPersons <= 40)
-            {
-                this.tabLayout.getTabAt(2).select();
-            }
-            else if(numberOfPersons == 0)
-            {
-                //errorMessage.setText("Incorrecte invoer");
-                errorMessage.setText(R.string.invalidInputMessageText);
-                errorMessage.setVisibility(View.VISIBLE);
-            }
-        }
-        catch(Exception e)
-        {
-            //errorMessage.setText("Incorrecte invoer");
-            errorMessage.setText(R.string.invalidInputMessageText);
-            errorMessage.setVisibility(View.VISIBLE);
-        }
+        int numberOfPersons = Integer.parseInt(text);
+        this.handleTableRequest(numberOfPersons);
     }
 
     public void onPlusMinusClicked(View view)
