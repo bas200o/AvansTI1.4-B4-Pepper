@@ -179,26 +179,26 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     private void startChat(final Chat chat, final String exitPhraseRegex){
         ThreadingHelper.setChatFuture(chat.async().run());
         ThreadingHelper.runOffMainThreadSynchronous(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        chat.addOnHeardListener(new Chat.OnHeardListener() {
-                            @Override
-                            public void onHeard(Phrase heardPhrase) {
-                                Log.d("chat onheard", heardPhrase.getText());
-                                String phrase = heardPhrase.getText().toLowerCase();
-                                if (phrase.matches(exitPhraseRegex)){
-                                    Log.d("chat onheard", "input matches exit regex");
-                                    ThreadingHelper.stopChat();
-                                    onSpeechRecognized(phrase);
-                                }
-                                else {
-                                    Log.d("chat onheard", "input does not match exit regex");
-                                }
+            new Runnable() {
+                @Override
+                public void run() {
+                    chat.addOnHeardListener(new Chat.OnHeardListener() {
+                        @Override
+                        public void onHeard(Phrase heardPhrase) {
+                            Log.d("chat onheard", heardPhrase.getText());
+                            String phrase = heardPhrase.getText().toLowerCase();
+                            if (phrase.matches(exitPhraseRegex)){
+                                Log.d("chat onheard", "input matches exit regex");
+                                ThreadingHelper.stopChat();
+                                onSpeechRecognized(phrase);
                             }
-                        });
-                    }
+                            else {
+                                Log.d("chat onheard", "input does not match exit regex");
+                            }
+                        }
+                    });
                 }
+            }
         );
     }
 
