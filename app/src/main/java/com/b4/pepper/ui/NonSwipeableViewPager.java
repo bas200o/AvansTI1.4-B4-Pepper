@@ -1,4 +1,4 @@
-package com.b4.pepper;
+package com.b4.pepper.ui;
 
 import android.content.Context;
 import android.support.v4.view.ViewPager;

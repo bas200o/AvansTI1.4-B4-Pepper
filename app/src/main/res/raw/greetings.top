@@ -5,6 +5,10 @@ topic: ~greetings()
 # Replying to speech
 #u:(~hello) ~hello
 
-concept:(hello) [hello hi hey "good morning"]
+concept:(hello) [hallo hello hi hey "Good morning" "Good day" "Good evening" hiya aloha]
+concept:(askTable) ["Wil je een tafel in het restourant?"]
+concept:(askTableResponse) ["ja" "ja graag" "okay" "okay graag" "oke" "oke graag" "alstublieft" "alsjeblieft" "ja hoor" "yup" "yup graag" "graag" "nee" "nee hoor" "nee hoeft niet" "nee bedankt" "nee dank je" "nee thanks" "nah" "nah hoor" "nah hoeft niet" "nah bedankt" "nah dankje" "nah thanks" "nope" "nope hoor" "nope hoeft niet" "nope bedankt" "nope dankje" "nope thanks"]
+concept:(silent) [""]
 
-u:(~hello) ~hello
+u:(~hello) ~askTable
+u:(~askTableResponse) ~silent

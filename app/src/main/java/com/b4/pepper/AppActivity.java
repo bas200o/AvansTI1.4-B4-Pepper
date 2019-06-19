@@ -4,6 +4,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
@@ -11,12 +12,24 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
+import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
+import com.aldebaran.qi.sdk.builder.ChatBuilder;
+import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
+import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
-import com.aldebaran.qi.sdk.object.conversation.ListenResult;
+import com.aldebaran.qi.sdk.object.conversation.Chat;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
+import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
+import com.aldebaran.qi.sdk.object.conversation.Topic;
+import com.b4.pepper.model.ConversationApiManager;
+import com.b4.pepper.model.speech.ConceptLibrary;
+import com.b4.pepper.model.speech.ConversationState;
 import com.b4.pepper.model.speech.ISpeechToTextReceiver;
-import com.b4.pepper.model.speech.SpeechRecognizer;
+import com.b4.pepper.model.speech.SpeechModel;
+import com.b4.pepper.ui.NonSwipeableViewPager;
 import com.b4.pepper.ui.main.SectionsPagerAdapter;
 
 import java.util.Locale;
@@ -25,6 +38,8 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 {
     private NonSwipeableViewPager viewPager;
     private TabLayout tabLayout;
+    private QiContext qiContext;
+    private ConversationState conversationState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -32,6 +47,8 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_app);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+
+        QiSDK.register(this,this);
 
         this.viewPager = findViewById(R.id.view_pager);
         this.viewPager.setAdapter(sectionsPagerAdapter);
@@ -59,26 +76,120 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         }
     }
 
-    @Override
-    public void onSpeechRecognized(ListenResult listenResult)
-    {
-        String recognizedSpeech = listenResult.getHeardPhrase().getText();
+    protected void onDestroy() {
+        QiSDK.unregister(this, this);
+        super.onDestroy();
+    }
 
-        //TODO HANDLE TEXT FROM SPEECH RECOGNIZER
+    private Chat getChatBot(int chat){
+        Topic topic = TopicBuilder.with(qiContext).withResource(chat).build();
+        QiChatbot qiChatbot = QiChatbotBuilder.with(qiContext).withTopic(topic).build();
+        return ChatBuilder.with(qiContext).withChatbot(qiChatbot).build();
     }
 
     @Override
     public void onRobotFocusGained(QiContext qiContext)
     {
-        SpeechRecognizer speechRecognizer = SpeechRecognizer.getInstance(qiContext);
-        speechRecognizer.listen();
-        System.out.println("LISTENING!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        Log.i("TEST", "focus gained");
+        this.qiContext = qiContext;
+        this.startNewConversation();
+    }
+
+    private void startNewConversation() {
+        this.conversationState = ConversationState.Greeting;
+        Chat greetingChat = getChatBot(R.raw.greetings);
+        startChat(greetingChat, ConceptLibrary.greetings);
+    }
+
+    private void startNetConversationAsync(){
+        this.setTab(0);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                startNewConversation();
+            }
+        }).start();
+    }
+
+    @Override
+    public void onSpeechRecognized(String phrase) {
+        Log.d("Human input", phrase);
+        switch (this.conversationState){
+            case Greeting: {
+                Log.d("Listening Greeting", phrase);
+                if (phrase.matches(ConceptLibrary.greetingsPositive)){
+
+                    this.setTab(1);
+                    new SpeechModel(qiContext).sayMessage("Met hoeveel mensen?");
+                    this.conversationState = ConversationState.AskingNumberOfPeople;
+                    Chat askChat = this.getChatBot(R.raw.met_hoeveel_mensen);
+                    startChat(askChat, ConceptLibrary.MetHoeveelMensen);
+                }
+                else {
+                    this.setTab(0);
+                    new SpeechModel(this.qiContext).sayMessage("Fijne dag nog");
+                    this.startNetConversationAsync();
+                }
+                break;
+            }
+            case AskingNumberOfPeople: {
+                Log.d("Listening AskingNumPeo", phrase);
+                int numberOfPeople = Integer.parseInt(phrase);
+                this.setNumberOfPeopleText(Integer.parseInt(phrase));
+                if (ConversationApiManager.getInstance().getTablesAvailable(numberOfPeople) > 0){
+                    this.setTab(2);
+                    new SpeechModel(this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
+                }
+                else {
+                    this.setTab(0);
+                    new SpeechModel(this.qiContext).sayMessage("Sorry, er zijn geen tafels beschikbaar");
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                this.startNetConversationAsync();
+                break;
+            }
+            case Finishing: {
+                // Not used
+                break;
+            }
+        }
+    }
+
+    private void startChat(final Chat chat, final String exitPhraseRegex){
+        final Future<Void> chatFuture = chat.async().run();
+        chat.addOnHeardListener(new Chat.OnHeardListener() {
+            @Override
+            public void onHeard(Phrase heardPhrase) {
+                Log.d("chat onheard", heardPhrase.getText());
+                String phrase = heardPhrase.getText().toLowerCase();
+                if (phrase.matches(exitPhraseRegex)){
+                    Log.d("chat onheard", "input matches exit regex");
+                    chatFuture.cancel(true);
+                    chatFuture.requestCancellation();
+                    while (!chat.getSaying().getText().equals("")) {
+                        try {
+                            Thread.sleep(10);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    onSpeechRecognized(phrase);
+                }
+                else {
+                    Log.d("chat onheard", "input does not match exit regex");
+                }
+            }
+        });
     }
 
     @Override
     public void onRobotFocusLost()
     {
-
+        this.qiContext = null;
     }
 
     @Override
@@ -95,7 +206,36 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
     public void onWantsTableButton(View view)
     {
-        this.tabLayout.getTabAt(1).select();
+        onWantsTableButton();
+    }
+
+    public void onWantsTableButton() {
+        this.setTab(1);
+    }
+
+    private void setTab(final int index) {
+        runOnUiThread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    tabLayout.getTabAt(index).select();
+                }
+            }
+        );
+    }
+
+    private void setNumberOfPeopleText(final int number){
+        runOnUiThread(
+            new Runnable() {
+                @Override
+                public void run() {
+                    TextView personsCountText = findViewById(R.id.personsCount);
+                    personsCountText.setText(
+                        number + ""
+                    );
+                }
+            }
+        );
     }
 
     public void onPersonsButtonClicked(View view)
