@@ -40,11 +40,16 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     private TabLayout tabLayout;
     private QiContext qiContext;
     private ConversationState conversationState;
+    private static AppActivity context;
+
+    public static AppActivity getContext(){
+        return context;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
+        AppActivity.context = this;
         setContentView(R.layout.activity_app);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
 
