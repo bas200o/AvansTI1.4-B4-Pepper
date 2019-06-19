@@ -1,3 +1,21 @@
 <resources>
     <string name="app_name">Pepper</string>
+    <string name="title_activity_app">AppActivity</string>
+    <string name="tab_text_1">Aanvraag</string>
+    <string name="tab_text_2">Personen</string>
+    <string name="tab_text_3">Afgerond</string>
+
+    <!--&lt;!&ndash; TODO: Remove or change this placeholder text &ndash;&gt;-->
+    <!--<string name="hello_blank_fragment">Hello blank fragment</string>-->
+
+    <string name="tipText">Spreek Pepper aan of typ op het scherm</string>
+    <string name="reserverQuestionText">Wilt u een tafel?</string>
+    <string name="yesText">Ja</string>
+
+    <string name="personAmmountText">Met hoeveel personen bent u</string>
+    <string name="reserverText">Afronden</string>
+    <string name="invalidInputMessageText">Incorrecte invoer</string>
+    <string name="toManyPersonsMessageText">Te veel personen</string>
+
+    <string name="finishText">U kunt gaan zitten aan tafel</string>
 </resources>
