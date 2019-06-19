@@ -32,6 +32,8 @@ import com.b4.pepper.model.speech.SpeechModel;
 import com.b4.pepper.ui.NonSwipeableViewPager;
 import com.b4.pepper.ui.main.SectionsPagerAdapter;
 
+import org.w3c.dom.Text;
+
 import java.util.Locale;
 
 public class AppActivity extends RobotActivity implements RobotLifecycleCallbacks, ISpeechToTextReceiver {
@@ -302,17 +304,20 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         new Thread(new Runnable() {
             @Override
             public void run() {
+                int tableId = -1;
+                try {
+                    TableManager tableManager = new TableManager();
+                    tableManager.reserveTable(numberOfPeople);
+                    tableId = tableManager.getPickedTable().getId();
+                } catch (Exception ex) { ex.printStackTrace(); Log.d("getting table", "mqtt error");}
 
-                TableManager tableManager = new TableManager();
-                tableManager.reserveTable(numberOfPeople);
-
-                if (tableManager.getPickedTable().getId() != -1) {
+                if (tableId != -1) {
 
                     AppActivity.this.setTab(2);
                     new SpeechModel(AppActivity.this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
-
-                    // TODO: kijk eens aan!
-                    Log.i("TABLE_ID", "the tableID: " + tableManager.getPickedTable().getId());
+                    Log.i("TABLE_ID", "the tableID: " + tableId);
+                    TextView tableNumberView = findViewById(R.id.tableNumber);
+                    tableNumberView.setText(tableId);
 
                 } else {
 
