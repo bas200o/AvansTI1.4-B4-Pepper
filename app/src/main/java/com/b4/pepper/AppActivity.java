@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,6 +20,7 @@ import com.aldebaran.qi.sdk.builder.QiChatbotBuilder;
 import com.aldebaran.qi.sdk.builder.TopicBuilder;
 import com.aldebaran.qi.sdk.design.activity.RobotActivity;
 import com.aldebaran.qi.sdk.object.conversation.Chat;
+import com.aldebaran.qi.sdk.object.conversation.Phrase;
 import com.aldebaran.qi.sdk.object.conversation.QiChatbot;
 import com.aldebaran.qi.sdk.object.conversation.Topic;
 import com.b4.pepper.model.ThreadingHelper;
@@ -66,7 +68,12 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         LinearLayout tabStrip = ((LinearLayout)tabLayout.getChildAt(0));
 
         for(int i = 0; i < tabStrip.getChildCount(); i++)
-            tabStrip.getChildAt(i).setOnTouchListener((v, event) -> true);
+            tabStrip.getChildAt(i).setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
     }
 
     protected void onDestroy() {
@@ -79,11 +86,14 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
         final Chat[] chat = new Chat[1];
 
-        ThreadingHelper.runOffMainThreadSynchronous(() -> {
+        ThreadingHelper.runOffMainThreadSynchronous(new Runnable() {
+            @Override
+            public void run() {
 
-            Topic topic = TopicBuilder.with(qiContext).withResource(chatResource).build();
-            QiChatbot qiChatbot = QiChatbotBuilder.with(qiContext).withTopic(topic).build();
-            chat[0] = ChatBuilder.with(qiContext).withChatbot(qiChatbot).build();
+                Topic topic = TopicBuilder.with(qiContext).withResource(chatResource).build();
+                QiChatbot qiChatbot = QiChatbotBuilder.with(qiContext).withTopic(topic).build();
+                chat[0] = ChatBuilder.with(qiContext).withChatbot(qiChatbot).build();
+            }
         });
 
         return chat[0];
@@ -108,7 +118,12 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     private void startNetConversationAsync(){
 
         this.setTab(0);
-        new Thread(this::startNewConversation).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AppActivity.this.startNewConversation();
+            }
+        }).start();
     }
 
     private void askNumberOfPeople(){
@@ -122,17 +137,20 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
     private void runLater(final int waitTime, final Runnable toRun) {
 
-        new Thread(() -> {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-            try {
+                try {
 
-                Thread.sleep(waitTime);
-            } catch (InterruptedException e) {
+                    Thread.sleep(waitTime);
+                } catch (InterruptedException e) {
 
-                e.printStackTrace();
+                    e.printStackTrace();
+                }
+
+                toRun.run();
             }
-
-            toRun.run();
         }).start();
     }
 
@@ -176,22 +194,30 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     private void startChat(final Chat chat, final String exitPhraseRegex){
 
         ThreadingHelper.setChatFuture(chat.async().run());
-        ThreadingHelper.runOffMainThreadSynchronous(() -> chat.addOnHeardListener(heardPhrase -> {
+        ThreadingHelper.runOffMainThreadSynchronous(new Runnable() {
+            @Override
+            public void run() {
+                chat.addOnHeardListener(new Chat.OnHeardListener() {
+                    @Override
+                    public void onHeard(Phrase heardPhrase) {
 
-            Log.d("chat onheard", heardPhrase.getText());
+                        Log.d("chat onheard", heardPhrase.getText());
 
-            String phrase = heardPhrase.getText().toLowerCase();
+                        String phrase = heardPhrase.getText().toLowerCase();
 
-            if (phrase.matches(exitPhraseRegex)) {
+                        if (phrase.matches(exitPhraseRegex)) {
 
-                Log.d("chat onheard", "input matches exit regex");
-                ThreadingHelper.stopChat();
-                onSpeechRecognized(phrase);
-            } else {
+                            Log.d("chat onheard", "input matches exit regex");
+                            ThreadingHelper.stopChat();
+                            AppActivity.this.onSpeechRecognized(phrase);
+                        } else {
 
-                Log.d("chat onheard", "input does not match exit regex");
+                            Log.d("chat onheard", "input does not match exit regex");
+                        }
+                    }
+                });
             }
-        }));
+        });
     }
 
     @Override
@@ -227,15 +253,23 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
 
     private void setTab(final int index) {
 
-        runOnUiThread(() -> tabLayout.getTabAt(index).select());
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tabLayout.getTabAt(index).select();
+            }
+        });
     }
 
     private void setNumberOfPeopleText(final int number){
 
-        runOnUiThread(() -> {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
 
-            TextView personsCountText = findViewById(R.id.personsCount);
-            personsCountText.setText(number + "");
+                TextView personsCountText = AppActivity.this.findViewById(R.id.personsCount);
+                personsCountText.setText(number + "");
+            }
         });
     }
 
@@ -258,28 +292,36 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
         } catch(Exception ignored) {}
     }
 
-    private void handleTableRequest(int numberOfPeople) {
+    private void handleTableRequest(final int numberOfPeople) {
 
-        new Thread(() -> {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
 
-            TableManager tableManager = new TableManager();
-            tableManager.reserveTable(numberOfPeople);
+                TableManager tableManager = new TableManager();
+                tableManager.reserveTable(numberOfPeople);
 
-            if (tableManager.getPickedTable().getId() != -1) {
+                if (tableManager.getPickedTable().getId() != -1) {
 
-                this.setTab(2);
-                new SpeechModel(this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
+                    AppActivity.this.setTab(2);
+                    new SpeechModel(AppActivity.this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
 
-                // TODO: kijk eens aan!
-                Log.i("TABLE_ID", "the tableID: " + tableManager.getPickedTable().getId());
+                    // TODO: kijk eens aan!
+                    Log.i("TABLE_ID", "the tableID: " + tableManager.getPickedTable().getId());
 
-            } else {
+                } else {
 
-                this.setTab(0);
-                new SpeechModel(this.qiContext).sayMessage("Sorry, er zijn geen tafels beschikbaar");
+                    AppActivity.this.setTab(0);
+                    new SpeechModel(AppActivity.this.qiContext).sayMessage("Sorry, er zijn geen tafels beschikbaar");
+                }
+
+                AppActivity.this.runLater(1000, new Runnable() {
+                    @Override
+                    public void run() {
+                        AppActivity.this.startNetConversationAsync();
+                    }
+                });
             }
-
-            this.runLater(1000, this::startNetConversationAsync);
         }).start();
     }
 
