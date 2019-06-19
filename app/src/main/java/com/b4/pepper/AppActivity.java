@@ -12,7 +12,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.aldebaran.qi.Future;
 import com.aldebaran.qi.sdk.QiContext;
 import com.aldebaran.qi.sdk.QiSDK;
 import com.aldebaran.qi.sdk.RobotLifecycleCallbacks;
@@ -279,9 +278,13 @@ public class AppActivity extends RobotActivity implements RobotLifecycleCallback
     }
 
     private void handleTableRequest(int numberOfPeople){
-        if (ConversationApiManager.getInstance().getTablesAvailable(numberOfPeople) > 0){
+        int tableId = ConversationApiManager.getInstance().getTableForGuests(numberOfPeople);
+        if (tableId != -1){
             this.setTab(2);
             new SpeechModel(this.qiContext).sayMessage("U kunt gaan zitten een tafel waar een lamp brandt");
+            // ToDo: Write table id to gui
+
+
         }
         else {
             this.setTab(0);
