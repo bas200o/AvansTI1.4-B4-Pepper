@@ -116,7 +116,7 @@ public class MqttBuilder {
                     esp.setSeats(jsonObject.getInt("seats"));
                     esp.setAvailable(jsonObject.getBoolean("isAvailable"));
 
-                    //listener.receiveData(esp);
+                    listener.receiveESP(esp);
 
                 } catch (JSONException e) {
 
